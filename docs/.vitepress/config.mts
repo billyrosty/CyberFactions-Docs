@@ -1,7 +1,31 @@
 import { defineConfig } from 'vitepress'
+import { existsSync } from 'fs'
+import { resolve, dirname } from 'path'
+
+const missingImagePlugin = {
+  name: 'missing-image-fallback',
+  resolveId(source: string, importer: string | undefined) {
+    if (importer && /\.(png|jpe?g|gif|svg|webp)(\?.*)?$/.test(source)) {
+      const resolved = resolve(dirname(importer), source)
+      if (!existsSync(resolved)) {
+        return '\0missing-image'
+      }
+    }
+    return null
+  },
+  load(id: string) {
+    if (id === '\0missing-image') {
+      return 'export default ""'
+    }
+    return null
+  }
+}
 
 export default defineConfig({
   ignoreDeadLinks: true,
+  vite: {
+    plugins: [missingImagePlugin]
+  },
   title: 'CyberFactions',
   description: 'Documentation for CyberFactions - The ultimate Minecraft Factions plugin',
   head: [
