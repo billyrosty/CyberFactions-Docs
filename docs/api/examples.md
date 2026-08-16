@@ -104,9 +104,9 @@ Two handlers: one vetoes claims in a protected world, one pays out when a core f
 package com.example.myaddon;
 
 import fr.billyrosty.factions.api.CyberFactionsAPI;
-import fr.billyrosty.factions.events.FactionClaimEvent;
-import fr.billyrosty.factions.events.FactionCoreDestroyEvent;
-import fr.billyrosty.factions.events.FPlayerJoinEvent;
+import fr.billyrosty.factions.api.event.faction.FactionClaimEvent;
+import fr.billyrosty.factions.api.event.faction.FactionCoreDestroyedEvent;
+import fr.billyrosty.factions.api.event.player.FPlayerJoinFactionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -128,39 +128,35 @@ public final class WarListener implements Listener {
         this.plugin = plugin;
     }
 
-    /** Veto claims in worlds we reserve for events. HIGH so we run before MONITOR observers. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onClaim(FactionClaimEvent event) {
-        if (!PROTECTED_WORLDS.contains(event.getFChunk().getWorld())) {
+        if (!PROTECTED_WORLDS.contains(event.getClaim().getWorld())) {
             return;
         }
         event.setCancelled(true);
 
-        Player player = Bukkit.getPlayer(event.getFPlayer().getUuid());
+        Player player = Bukkit.getPlayer(event.getPlayer().getUuid());
         if (player != null) {
             player.sendMessage("This world cannot be claimed.");
         }
     }
 
-    /** Pay the whole server a consolation when a core is destroyed. */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onCoreDestroyed(FactionCoreDestroyEvent event) {
+    public void onCoreDestroyed(FactionCoreDestroyedEvent event) {
         int factionId = event.getFaction().getId();
         String name = event.getFaction().getName();
 
         Bukkit.broadcast(net.kyori.adventure.text.Component.text(
                 "The core of " + name + " has fallen!"));
 
-        // Bank writes are cache + storage only, so this is safe off-thread.
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () ->
                 api.getEconomyService().withdraw(factionId, 5000));
     }
 
-    /** Welcome a new member with their faction's current standing. */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onJoinFaction(FPlayerJoinEvent event) {
+    public void onJoinFaction(FPlayerJoinFactionEvent event) {
         int factionId = event.getFaction().getId();
-        Player player = Bukkit.getPlayer(event.getFPlayer().getUuid());
+        Player player = Bukkit.getPlayer(event.getPlayer().getUuid());
         if (player == null) {
             return;
         }
@@ -172,9 +168,7 @@ public final class WarListener implements Listener {
 }
 ```
 
-::: tip Compiling this
-`FactionClaimEvent`, `FactionCoreDestroyEvent` and `FPlayerJoinEvent` are in the plugin jar, not the API module. Add `compileOnly fileTree(dir: 'libs', include: ['CyberFactions*.jar'])` to your build — see [Events](/api/events#where-the-event-classes-live).
-:::
+All events used here (`FactionClaimEvent`, `FactionCoreDestroyedEvent`, `FPlayerJoinFactionEvent`) are in the API module — no plugin jar needed.
 
 ## 3. Adding `/f warchest`
 

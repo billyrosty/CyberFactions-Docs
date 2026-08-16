@@ -21,7 +21,7 @@ public interface CyberAddon {
 
     Plugin getOwningPlugin();
 
-    default String getDescription() {
+    default String getAddonDescription() {
         return "";
     }
 
@@ -39,13 +39,13 @@ public interface CyberAddon {
 | `getName()` | Human-readable, used in log lines. |
 | `getVersion()` / `getAuthor()` | Used in the enable log line and readable by other addons. |
 | `getOwningPlugin()` | Your `JavaPlugin` instance. Lets CyberFactions attribute the addon to a plugin. |
-| `getDescription()` | Optional, defaults to `""`. |
+| `getAddonDescription()` | Optional, defaults to `""`. |
 | `onEnable(api)` | Called **synchronously from inside `registerAddon()`**, on whatever thread you called it from. Do your registration here. Throwing rolls the addon back out of the registry. |
 | `onDisable()` | Called by `unregisterAddon(id)` and automatically on server shutdown. |
 | `onReload()` | Called for every registered addon when an operator runs `/f reload`. |
 
-::: danger Never implement `CyberAddon` on your `JavaPlugin`
-`JavaPlugin.getDescription()` returns `PluginDescriptionFile`; `CyberAddon.getDescription()` returns `String`. Same signature, different return type — the class will not compile. Put the addon handle in its own class and pass the plugin to it. Full example in [Getting Started](/api/getting-started#shape-b-registered-addon-recommended).
+::: tip
+We recommend keeping the addon handle in its own class rather than on your `JavaPlugin`. Full example in [Getting Started](/api/getting-started#shape-b-registered-addon-recommended).
 :::
 
 ## Lifecycle
@@ -144,7 +144,7 @@ registry.getAddon("cyberquests").ifPresent(other ->
 // Roster, e.g. for a /addons command.
 for (CyberAddon addon : registry.getRegisteredAddons()) {
     sender.sendMessage(addon.getName() + " v" + addon.getVersion()
-            + " by " + addon.getAuthor() + " — " + addon.getDescription());
+            + " by " + addon.getAuthor() + " — " + addon.getAddonDescription());
 }
 ```
 
@@ -167,7 +167,6 @@ for (CyberAddon addon : registry.getRegisteredAddons()) {
 
 | Gap | Work around it by |
 |-----|-------------------|
-| The API's own `FactionEvent` / `FPlayerEvent` are never fired | Listen to `fr.billyrosty.factions.events.*` from the plugin jar |
 | Dynamic tab completers are registered but never consulted | Register a separate top-level Bukkit command |
 | Custom permissions cannot be set per faction | Fall back on a built-in permission, or keep your own per-faction storage |
 | `RoleSnapshot` is unreachable | Read the role id from `FPlayerSnapshot.getRole()` and resolve it against `roles.yml` yourself |

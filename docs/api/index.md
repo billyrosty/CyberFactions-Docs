@@ -17,10 +17,11 @@ New to the API? Jump straight to [Getting Started](/api/getting-started) for a c
 | `fr.billyrosty.factions.api.permission` | `PermissionRegistry`, `CustomPermission`, `PermissionState`, `PermissionType` |
 | `fr.billyrosty.factions.api.upgrade` | `UpgradeRegistry`, `CustomProperty` |
 | `fr.billyrosty.factions.api.addon` | `AddonRegistry`, `CyberAddon` |
-| `fr.billyrosty.factions.api.event` | `FactionEvent`, `FPlayerEvent` — see the warning on the [Events](/api/events) page |
+| `fr.billyrosty.factions.api.event.faction` | Faction lifecycle, territory, core, relations events |
+| `fr.billyrosty.factions.api.event.player` | Player membership, economy, territory, chat events |
 
-::: warning Events live in the plugin jar, not in the API module
-The Bukkit events CyberFactions actually fires are in `fr.billyrosty.factions.events`, which is part of the **main plugin jar**, not of the `api` module. If you want to listen to them you must compile against `CyberFactions.jar` as well. See [Events](/api/events).
+::: tip Events are in the API module
+All events are in the API — you only need `cyberfactions-api` to listen to them. See [Events](/api/events).
 :::
 
 ## The entry point

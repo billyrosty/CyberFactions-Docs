@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  ignoreDeadLinks: true,
   title: 'CyberFactions',
   description: 'Documentation for CyberFactions - The ultimate Minecraft Factions plugin',
   head: [

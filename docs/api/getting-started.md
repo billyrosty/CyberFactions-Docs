@@ -4,40 +4,50 @@ This page builds a complete, compilable CyberFactions addon from an empty direct
 
 ## 1. Get the API jar
 
-The `api` module is a separate Gradle subproject inside CyberFactions. It is published under the coordinates `fr.billyrosty:cyberfactions-api:<version>`.
+The `api` module is published under the coordinates `fr.billyrosty:cyberfactions-api:<version>`.
 
-::: warning No public Maven repository yet
-At the time of writing there is **no public remote repository** serving `cyberfactions-api`. Use one of the two options below.
-:::
-
-### Option A — local jar (simplest)
-
-Drop `cyberfactions-api-<version>.jar` into a `libs/` folder next to your `build.gradle`:
-
-```groovy
-dependencies {
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
-}
-```
-
-### Option B — Maven local
-
-If you have the CyberFactions source, publish the API to your local Maven repository once:
-
-```bash
-./gradlew :api:publishToMavenLocal
-```
-
-Then in your addon:
+### Gradle (Groovy)
 
 ```groovy
 repositories {
-    mavenLocal()
+    maven { url = 'https://billyrosty.github.io/CyberFactions-API' }
 }
 
 dependencies {
-    compileOnly 'fr.billyrosty:cyberfactions-api:1.0.4'
+    compileOnly 'fr.billyrosty:cyberfactions-api:<version>'
 }
+```
+
+### Gradle (Kotlin DSL)
+
+```kotlin
+repositories {
+    maven("https://billyrosty.github.io/CyberFactions-API")
+}
+
+dependencies {
+    compileOnly("fr.billyrosty:cyberfactions-api:<version>")
+}
+```
+
+### Maven
+
+```xml
+<repositories>
+    <repository>
+        <id>cyberfactions</id>
+        <url>https://billyrosty.github.io/CyberFactions-API</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>fr.billyrosty</groupId>
+        <artifactId>cyberfactions-api</artifactId>
+        <version>VERSION</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
 ```
 
 ## 2. `build.gradle`
@@ -52,20 +62,15 @@ version = '1.0.0'
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url = 'https://billyrosty.github.io/CyberFactions-API' }
 }
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
 
-    // The API module — interfaces only, no plugin internals.
-    compileOnly 'fr.billyrosty:cyberfactions-api:1.0.4'
-
-    // ONLY needed if you listen to CyberFactions' Bukkit events, which live in
-    // the main plugin jar (fr.billyrosty.factions.events). Drop CyberFactions.jar
-    // into libs/ for this.
-    compileOnly fileTree(dir: 'libs', include: ['CyberFactions*.jar'])
+    // The API module — interfaces, events, and snapshot models.
+    compileOnly 'fr.billyrosty:cyberfactions-api:<version>'
 }
 
 java {
@@ -171,15 +176,8 @@ public final class MyAddon extends JavaPlugin {
 
 Implementing `CyberAddon` and registering it with the `AddonRegistry` gets you a lifecycle managed by CyberFactions: your `onEnable(api)` is called with the API already handed to you, `onDisable()` is called automatically when CyberFactions shuts down, and `onReload()` fires on `/f reload`.
 
-::: danger Do not implement `CyberAddon` on your `JavaPlugin` class
-`JavaPlugin` declares `public PluginDescriptionFile getDescription()`. `CyberAddon` declares `default String getDescription()`. Same signature, incompatible return types — a class that extends `JavaPlugin` **and** implements `CyberAddon` does not compile:
-
-```
-error: getDescription() in JavaPlugin cannot implement getDescription() in CyberAddon
-  return type PluginDescriptionFile is not compatible with String
-```
-
-Keep the addon handle in its own class, as shown below.
+::: tip Addon handle as a separate class
+We recommend keeping the `CyberAddon` implementation in its own class (not your `JavaPlugin`). This keeps responsibilities clean — the plugin handles Bukkit lifecycle, the addon handle talks to CyberFactions.
 :::
 
 `MyAddonHandle.java` — the `CyberAddon` implementation:
@@ -228,7 +226,7 @@ public final class MyAddonHandle implements CyberAddon {
     }
 
     @Override
-    public String getDescription() {
+    public String getAddonDescription() {
         return "Puts bounties on enemy faction members.";
     }
 

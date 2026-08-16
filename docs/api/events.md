@@ -1,128 +1,112 @@
 # Events
 
-CyberFactions fires standard Bukkit events. Listening to them is the recommended way to react to faction activity — polling the services on a scheduler is not.
+CyberFactions fires standard Bukkit events through the API module. Listening to them requires **only** the `cyberfactions-api` dependency — no need for the plugin jar.
 
-## Where the event classes live
-
-::: danger Events are in the plugin jar, not the API module
-The events you can actually listen to are in **`fr.billyrosty.factions.events`**, which is compiled into `CyberFactions.jar`. The `api` module's own `fr.billyrosty.factions.api.event` package contains two classes (`FactionEvent`, `FPlayerEvent`) that **the plugin never fires** — see [the note at the bottom](#the-api-event-package).
-
-To listen to events, add the plugin jar to your compile classpath:
+## Dependency
 
 ```groovy
+repositories {
+    maven { url = 'https://billyrosty.github.io/CyberFactions-API' }
+}
+
 dependencies {
-    compileOnly 'fr.billyrosty:cyberfactions-api:1.0.4'
-    compileOnly fileTree(dir: 'libs', include: ['CyberFactions*.jar'])
+    compileOnly 'fr.billyrosty:cyberfactions-api:<version>'
 }
 ```
 
-The event getters hand you the plugin's **internal** `Faction`, `FPlayer`, `FChunk`, `FLocation`, `Core` and `FPermission` types — not API snapshots. Those types are not part of the API's compatibility contract and may change between releases. Where possible, read the id / UUID off them immediately and continue through the API:
+All event classes live in `fr.billyrosty.factions.api.event.faction` and `fr.billyrosty.factions.api.event.player`.
 
-```java
-int factionId = event.getFaction().getId();
-api.getFactionService().getFaction(factionId).ifPresent(this::doSomething);
-```
+## Base class
+
+Every event extends `CyberFactionsEvent` (which extends Bukkit's `Event`). All events are fired on the **main server thread**.
+
+## Faction events
+
+All faction events are in `fr.billyrosty.factions.api.event.faction`.
+
+### Lifecycle
+
+| Event | Cancellable | Getters |
+|-------|:-----------:|---------|
+| `FactionCreateEvent` | Yes | `getCreator()` → `FPlayerSnapshot`, `getFaction()` → `FactionSnapshot` |
+| `FactionDisbandEvent` | Yes | `getPlayer()`, `getFaction()` |
+| `FactionRenameEvent` | Yes | `getPlayer()`, `getFaction()`, `getOldName()`, `getNewName()` |
+| `FactionDescriptionChangeEvent` | Yes | `getPlayer()`, `getFaction()`, `getNewDescription()` |
+| `FactionUpgradeEvent` | No | `getFaction()`, `getNewLevel()` |
+| `FactionsLoadedEvent` | No | `getFactionCount()` |
+
+::: tip FactionsLoadedEvent
+Fired once after the storage layer finishes loading all factions at startup. The right moment to build your own indexes.
 :::
 
-All events are fired on the **main server thread**.
-
-## Faction lifecycle
+### Territory
 
 | Event | Cancellable | Getters |
 |-------|:-----------:|---------|
-| `FactionCreateEvent` | Yes | `getFPlayer()`, `getFaction()` |
-| `FactionDisbandEvent` | Yes | `getFPlayer()`, `getFaction()` |
-| `FactionRenameEvent` | Yes | `getFPlayer()`, `getFaction()`, `getNewName()`, `getOldName()` |
-| `FactionDescChangeEvent` | Yes | `getFPlayer()`, `getFaction()`, `getDesc()` |
-| `FactionUpgradeEvent` | No | `getFaction()` |
-| `FactionAddedEvent` | No | `getFaction()` |
-| `FactionsLoadedEvent` | No | `getFactions()` → `Map<Integer, Faction>` |
+| `FactionClaimEvent` | Yes | `getPlayer()`, `getFaction()`, `getClaim()` → `ClaimSnapshot` |
+| `FactionUnclaimEvent` | Yes | `getPlayer()`, `getFaction()`, `getClaim()` |
+| `FactionUnclaimAllEvent` | Yes | `getPlayer()`, `getFaction()` |
+| `FactionHomeSetEvent` | Yes | `getPlayer()`, `getFaction()`, `getLocation()` → `FLocationSnapshot` |
 
-::: tip `FactionAddedEvent` vs `FactionCreateEvent`
-`FactionCreateEvent` fires when a faction is created **on this server**. `FactionAddedEvent` fires whenever a faction the cache had never seen appears — which includes factions created on *another* server and pushed in over Redis. If you maintain your own per-faction state on a network, hook `FactionAddedEvent`, not `FactionCreateEvent`.
+### Core
+
+| Event | Cancellable | Getters |
+|-------|:-----------:|---------|
+| `FactionCoreSetEvent` | No | `getFaction()`, `getCore()` → `CoreSnapshot` |
+| `FactionCoreRemovedEvent` | No | `getFaction()` |
+| `FactionCoreAttackedEvent` | No | `getFaction()`, `getCore()` |
+| `FactionCoreDestroyedEvent` | No | `getFaction()` |
+
+### Relations & permissions
+
+| Event | Cancellable | Getters |
+|-------|:-----------:|---------|
+| `FactionRelationChangeEvent` | Yes | `getFaction()`, `getTargetFaction()`, `getRelationId()` |
+| `FactionPermissionChangeEvent` | Yes | `getPlayer()`, `getFaction()`, `getPermission()`, `getRole()`, `getNewValue()` |
+
+## Player events
+
+All player events are in `fr.billyrosty.factions.api.event.player`.
+
+### Membership
+
+| Event | Cancellable | Getters |
+|-------|:-----------:|---------|
+| `FPlayerJoinFactionEvent` | Yes | `getPlayer()` → `FPlayerSnapshot`, `getFaction()` → `FactionSnapshot` |
+| `FPlayerLeaveFactionEvent` | Yes | `getPlayer()`, `getFaction()` |
+| `FPlayerKickedEvent` | Yes | `getKicker()`, `getKicked()`, `getFaction()` |
+| `FPlayerInviteEvent` | Yes | `getInviter()`, `getInvitedName()`, `getFaction()` |
+| `FPlayerRoleChangeEvent` | Yes | `getPlayer()`, `getOldRole()`, `getNewRole()` |
+
+### Economy & power
+
+| Event | Cancellable | Getters |
+|-------|:-----------:|---------|
+| `FPlayerDepositEvent` | No | `getPlayer()`, `getFaction()`, `getAmount()` |
+| `FPlayerWithdrawEvent` | No | `getPlayer()`, `getFaction()`, `getAmount()` |
+| `FPlayerPowerRegenEvent` | Yes | `getPlayer()`, `getAmount()`, `setAmount(double)` |
+
+::: tip PowerRegenEvent
+The only economy-related event you can modify. Call `setAmount()` to change how much power is regenerated, or `setCancelled(true)` to block it entirely.
 :::
 
-::: tip `FactionsLoadedEvent`
-Fired once, after the storage layer has finished loading every faction at startup. This is the right moment to build any index of your own — before it, `getAllFactions()` may still be empty.
-:::
-
-## Membership
+### Territory & chat
 
 | Event | Cancellable | Getters |
 |-------|:-----------:|---------|
-| `FPlayerCreateEvent` | No | `getFPlayer()` |
-| `FPlayerInviteEvent` | Yes | `getFPlayer()`, `getInvited()`, `getFaction()` |
-| `FPlayerJoinEvent` | Yes | `getFPlayer()`, `getFaction()` |
-| `FPlayerLeaveEvent` | Yes | `getFPlayer()`, `getFaction()` |
-| `FPlayerKickEvent` | Yes | `getFPlayer()` (the kicker), `getKicked()`, `getFaction()` |
-| `FPlayerRoleChangeEvent` | Yes | `getFPlayer()`, `getRole()` → `Role` |
+| `FPlayerTerritoryEnterEvent` | No | `getPlayer()`, `getFrom()` → `FactionSnapshot`, `getTo()` → `FactionSnapshot` |
+| `FPlayerChatModeChangeEvent` | No | `getPlayer()`, `getOldMode()`, `getNewMode()` |
 
-`FPlayerCreateEvent` fires the first time a player ever joins and an `FPlayer` record is created for them.
+`FPlayerTerritoryEnterEvent` fires on every chunk crossing that changes owning faction. `getFrom()`/`getTo()` return `FactionSnapshot` — one may be the Wilderness faction (id `0`).
 
-## Territory
-
-| Event | Cancellable | Getters |
-|-------|:-----------:|---------|
-| `FactionClaimEvent` | Yes | `getFPlayer()`, `getFaction()`, `getFChunk()` |
-| `FactionUnClaimEvent` | Yes | `getFPlayer()`, `getFaction()`, `getFChunk()` |
-| `FactionUnClaimAllEvent` | Yes | `getFPlayer()`, `getFaction()` |
-| `FPlayerEnteredFactionEvent` | No | `getFPlayer()`, `getFrom()`, `getTo()` |
-
-`FPlayerEnteredFactionEvent` fires on every chunk crossing that changes owning faction. `getFrom()` and `getTo()` are `Faction` objects, and one of them may be the Wilderness faction (id `0`) rather than `null`.
-
-## Home, warps and core
-
-| Event | Cancellable | Getters |
-|-------|:-----------:|---------|
-| `FactionSetHomeEvent` | Yes | `getFPlayer()`, `getFaction()`, `getFHome()` → `FLocation` |
-| `FPlayerTeleportEvent` | Yes | `getFPlayer()`, `getFrom()`, `getTo()` (both `FLocation`) |
-| `FactionSetCoreEvent` | No | `getFaction()`, `getCore()` |
-| `FactionDelCoreEvent` | No | `getFaction()` |
-| `FactionCoreAttackedEvent` | No | `getFaction()` |
-| `FactionCoreDestroyEvent` | No | `getFaction()` |
-| `FactionCoreRegenEvent` | No | `getFaction()` |
-| `FactionCoreFullRegenEvent` | No | `getFaction()` |
-
-::: warning There is no `FactionDelHomeEvent`
-Setting a home fires an event; removing one (`/f delhome`, or a home cleared by an overclaim) does not.
-:::
-
-## Relations
-
-| Event | Cancellable | Getters |
-|-------|:-----------:|---------|
-| `FactionRelationRequestEvent` | No | `getFaction1()`, `getFaction2()`, `getRelationId()` |
-| `FactionRelationChangeEvent` | Yes | `getFaction1()`, `getFaction2()`, `getRelationId()` |
-
-`FactionRelationRequestEvent` fires when a relation that has `need_request: true` is proposed. `FactionRelationChangeEvent` fires when it actually takes effect.
-
-## Economy, power and permissions
-
-| Event | Cancellable | Getters |
-|-------|:-----------:|---------|
-| `FPlayerDepositEvent` | No | `getFPlayer()`, `getFaction()`, `getAmount()` |
-| `FPlayerWithdrawEvent` | No | `getFPlayer()`, `getFaction()`, `getAmount()` |
-| `PowerRegenEvent` | Yes | `getFPlayer()`, `getPower()` |
-| `FactionEditPermissionEvent` | No | `getFPlayer()`, `getFaction()`, `getPermission()` → `FPermission` |
-
-::: warning Deposit and withdraw are not cancellable
-`FPlayerDepositEvent` and `FPlayerWithdrawEvent` are notifications only — by the time they fire the bank has already moved. Only `PowerRegenEvent` lets you veto an economy-adjacent change.
-:::
-
-## Chat and misc
-
-| Event | Cancellable | Getters |
-|-------|:-----------:|---------|
-| `FPlayerSwitchChatEvent` | Yes | `getFPlayer()`, `getChatType()` |
-| `FPlayerSpyChatStateChangeEvent` | Yes | `getFPlayer()`, `isSpy()` |
-
-## Listening
+## Listening example
 
 ```java
 package com.example.myaddon;
 
-import fr.billyrosty.factions.events.FactionClaimEvent;
-import fr.billyrosty.factions.events.FactionCreateEvent;
+import fr.billyrosty.factions.api.event.faction.FactionClaimEvent;
+import fr.billyrosty.factions.api.event.faction.FactionCreateEvent;
+import fr.billyrosty.factions.api.event.player.FPlayerJoinFactionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -134,25 +118,33 @@ public final class FactionListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFactionCreate(FactionCreateEvent event) {
         String name = event.getFaction().getName();
+        String creator = event.getCreator().getName();
         Bukkit.broadcast(net.kyori.adventure.text.Component.text(
-                "A new faction has risen: " + name));
+                creator + " founded the faction " + name + "!"));
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClaim(FactionClaimEvent event) {
-        // Block claims in a protected world.
-        if ("event_world".equals(event.getFChunk().getWorld())) {
+        if ("event_world".equals(event.getClaim().getWorld())) {
             event.setCancelled(true);
-            Player player = Bukkit.getPlayer(event.getFPlayer().getUuid());
+            Player player = Bukkit.getPlayer(event.getPlayer().getUuid());
             if (player != null) {
                 player.sendMessage("You cannot claim in the event world.");
             }
         }
     }
+
+    @EventHandler
+    public void onJoin(FPlayerJoinFactionEvent event) {
+        int memberCount = event.getFaction().getMembersCount();
+        Bukkit.getLogger().info(event.getPlayer().getName()
+                + " joined " + event.getFaction().getName()
+                + " (now " + memberCount + " members)");
+    }
 }
 ```
 
-Register it as usual:
+Register:
 
 ```java
 Bukkit.getPluginManager().registerEvents(new FactionListener(), this);
@@ -162,36 +154,27 @@ Bukkit.getPluginManager().registerEvents(new FactionListener(), this);
 Use `EventPriority.HIGH` (or `HIGHEST`) when you want to veto, and `MONITOR` with `ignoreCancelled = true` when you only want to observe the outcome. Never mutate state from a `MONITOR` handler.
 :::
 
-## The `api.event` package
+## Snapshot model
 
-The API module also ships:
+All getters return **snapshot interfaces** (`FactionSnapshot`, `FPlayerSnapshot`, `ClaimSnapshot`, `CoreSnapshot`). These are read-only views of the internal state at the moment the event was fired. You cannot modify the faction/player through them — use the API services for mutations:
 
 ```java
-package fr.billyrosty.factions.api.event;
-
-public class FactionEvent extends Event {
-    public enum Type {
-        CREATED, DISBANDED, CLAIMED, UNCLAIMED, UNCLAIMED_ALL, UPGRADED,
-        RENAMED, DESCRIPTION_CHANGED, HOME_SET, HOME_REMOVED,
-        CORE_SET, CORE_REMOVED, CORE_ATTACKED, CORE_DESTROYED,
-        PERMISSION_CHANGED, RELATION_CHANGED
-    }
-    public FactionSnapshot getFaction();
-    public Type getType();
-}
-
-public class FPlayerEvent extends Event {
-    public enum Type {
-        JOINED_FACTION, LEFT_FACTION, KICKED, ROLE_CHANGED, POWER_CHANGED,
-        CHAT_MODE_CHANGED, ENTERED_FACTION_TERRITORY, TELEPORTED
-    }
-    public FPlayerSnapshot getPlayer();
-    public Type getType();
+@EventHandler
+public void onCoreDestroyed(FactionCoreDestroyedEvent event) {
+    int factionId = event.getFaction().getId();
+    // Use the service for any writes
+    api.getFactionService().getFaction(factionId).ifPresent(faction -> {
+        // react to the destruction...
+    });
 }
 ```
 
-::: danger These two are never fired
-As of `1.0.4`, nothing in CyberFactions constructs or calls `FactionEvent` or `FPlayerEvent`. A listener registered for them will never be invoked. They are a planned snapshot-based replacement for the internal event classes; until they are wired up, use `fr.billyrosty.factions.events.*`.
+## Internal events (advanced)
 
-Neither class implements `Cancellable`, so even once fired they would be observation-only.
-:::
+The core plugin also fires its own internal events in `fr.billyrosty.factions.events.*`. These expose the raw `Faction`, `FPlayer`, `FChunk` types. They are **not part of the API contract** — they may change between releases without notice. Use them only if you need to modify the internal object mid-event (e.g. `setFaction()` on a `FactionCreateEvent`).
+
+To listen to internal events, you need the plugin jar on your classpath:
+
+```groovy
+compileOnly fileTree(dir: 'libs', include: ['CyberFactions*.jar'])
+```
