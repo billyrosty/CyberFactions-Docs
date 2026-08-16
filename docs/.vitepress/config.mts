@@ -22,6 +22,7 @@ const missingImagePlugin = {
 }
 
 export default defineConfig({
+  base: '/CyberFactions-Docs/',
   ignoreDeadLinks: true,
   vite: {
     plugins: [missingImagePlugin]
