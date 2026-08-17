@@ -95,10 +95,8 @@ try {
 }
 ```
 Two consequences:
-1. The `permission` string must name a built-in permission (`BREAK`, `PLACE`, `CLAIM`, …). Anything else — including a `CustomPermission` you registered — returns `false`.
+1. The `permission` string can be a built-in permission (`BREAK`, `PLACE`, `CLAIM`, …) or a custom permission id registered through `PermissionRegistry`. Both are resolved correctly.
 2. The `FPlayerSnapshot` must be one CyberFactions produced. Passing your own implementation returns `false`.
-
-For custom permissions use `PermissionRegistry.hasPermission(factionId, uuid, permissionId)` instead — see [Registries](/api/registries).
 :::
 
 ### Built-in permission ids
@@ -287,6 +285,6 @@ public interface RoleSnapshot {
 }
 ```
 
-::: danger `RoleSnapshot` is not reachable
-No service on `CyberFactionsAPI` returns a `RoleSnapshot`, and no implementation of it ships with the plugin. The interface exists in the API module but is currently dead — you can read a player's role id via `FPlayerSnapshot.getRole()`, but you cannot obtain the role's prefix, suffix, power or permissions through the API.
+::: tip Obtaining a `RoleSnapshot`
+Use `api.getRoleService().getRole(id)` to resolve a role id into a full snapshot, or `api.getRoleService().getRoleByPlayer(uuid)` to get a player's current role directly.
 :::

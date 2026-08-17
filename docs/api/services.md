@@ -79,17 +79,8 @@ public interface FactionService {
 | `setOwner` / `setName` / `setDescription` / `setLevel` / `setAdmin` | Thin wrappers over `mutateFaction`. They write to the live object and persist, but do **not** fire the corresponding events (`FactionRenameEvent`, `FactionDescChangeEvent`, …). |
 | `mutateFaction(int, Consumer)` | Runs the mutator against the live faction, then persists once. No-op for an unknown id. Prefer it over several setters — it produces a single write instead of one per field. |
 
-::: danger `invite()` parameters are mis-wired
-The declared signature is `invite(int factionId, UUID target, String inviterName)`, but the implementation resolves `Bukkit.getPlayer(target)` and passes it as the **inviter**, while `inviterName` is passed as the **invited player's name**:
-
-```java
-// FactionServiceImpl
-Player player = Bukkit.getPlayer(target);
-CyberPlugin.getFactionManager().invite(faction, player, inviterName);
-// FactionManager signature: invite(Faction faction, Player inviter, String target)
-```
-
-In practice you must call it as `invite(factionId, inviterUuid, invitedPlayerName)`. The invite is also a no-op if the resolved player is offline. Treat this as unstable until fixed.
+::: tip `invite()` usage
+Call as `invite(factionId, targetUUID, inviterName)`. Resolves the inviter by name, looks up the target by UUID, then sends the invitation. No-op if the inviter is offline.
 :::
 
 ::: tip Batch your writes
@@ -325,3 +316,29 @@ public interface TeleportationService {
 - `bypassWarmup = true` skips the countdown *and* the movement-cancels-teleport rule.
 - The `String server` overload targets a cross-server teleport in a Redis network; the player is queued and sent on arrival at the target server.
 - `getWarmupDuration()` returns the configured `/f home` warmup in seconds (`teleportation.yml`), not the remaining warmup of a pending teleport.
+
+## RoleService
+
+```java
+package fr.billyrosty.factions.api.service;
+
+public interface RoleService {
+
+    Collection<RoleSnapshot> getRegisteredRoles();
+
+    Optional<RoleSnapshot> getRole(String id);
+
+    Optional<RoleSnapshot> getRoleByPlayer(UUID player);
+
+    String getServerName();
+}
+```
+
+### Behaviour notes
+
+| Method | Notes |
+|--------|-------|
+| `getRegisteredRoles()` | Returns all roles defined in `roles.yml`. Allocates a fresh snapshot per role. |
+| `getRole(String)` | The id is the key from `roles.yml` (e.g. `"recruit"`, `"member"`, `"leader"`). Case-sensitive. |
+| `getRoleByPlayer(UUID)` | Resolves the player's current role id from their `FPlayer` record, then looks up the role. Empty when the player has no account or an unknown role id. |
+| `getServerName()` | Returns the `server_name` value from `general.yml`. Use this with the explicit `String server` overloads in `ClaimService`. |

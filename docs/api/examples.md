@@ -240,7 +240,6 @@ public final class WarchestCommand implements FactionSubCommand {
             return;
         }
 
-        // Custom permissions are not per-faction yet, so gate on a built-in one.
         boolean allowed = api.getPermissionRegistry()
                 .hasPermission(faction.getId(), player.getUniqueId(), "BANK_WITHDRAW");
         if (!allowed) {
@@ -395,8 +394,6 @@ public final class SiegePermission implements CustomPermission {
 
     @Override
     public PermissionState getDefaultState() {
-        // Custom permissions currently resolve to this constant for everyone —
-        // pick the state you want as the server-wide behaviour.
         return PermissionState.DENIED;
     }
 
@@ -412,22 +409,13 @@ public final class SiegePermission implements CustomPermission {
     }
 
     public static boolean canStartSiege(CyberFactionsAPI api, int factionId, UUID player) {
-        PermissionRegistry registry = api.getPermissionRegistry();
-
-        // Custom id: always returns getDefaultState() == ALLOWED, i.e. false here.
-        if (registry.hasPermission(factionId, player, ID)) {
-            return true;
-        }
-
-        // Practical fallback while custom permissions are not per-faction:
-        // reuse a built-in permission with comparable weight.
-        return registry.hasPermission(factionId, player, "RELATION");
+        return api.getPermissionRegistry().hasPermission(factionId, player, ID);
     }
 }
 ```
 
-::: warning Read this before shipping a custom permission
-`setPermission(...)` silently drops non-built-in ids, so faction leaders cannot grant or revoke your permission and it never appears in `/f permissions`. Until that is fixed, either fall back on a built-in permission as above, or store your own per-faction toggle keyed by faction id. Full detail on [Registries](/api/registries#permissionregistry).
+::: tip Setting permissions per faction
+Use `setPermission(factionId, roleId, permissionId, state)` to let faction leaders grant/revoke your custom permission per role. The state is persisted and synced via Redis.
 :::
 
 ## 6. A custom upgrade property

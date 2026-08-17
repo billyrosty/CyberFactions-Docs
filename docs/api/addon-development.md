@@ -167,8 +167,4 @@ for (CyberAddon addon : registry.getRegisteredAddons()) {
 
 | Gap | Work around it by |
 |-----|-------------------|
-| Dynamic tab completers are registered but never consulted | Register a separate top-level Bukkit command |
-| Custom permissions cannot be set per faction | Fall back on a built-in permission, or keep your own per-faction storage |
-| `RoleSnapshot` is unreachable | Read the role id from `FPlayerSnapshot.getRole()` and resolve it against `roles.yml` yourself |
 | API writes do not fire events | Do not assume other addons will see your changes; broadcast your own event if it matters |
-| No accessor for this server's name | Use the `Chunk` / `Location` overloads, which fill it in |

@@ -47,6 +47,7 @@ Claiming, unclaiming, homes, warps, and territory access.
 | `/f warps` | List all faction warps |
 | `/f setcore` | Set faction core at your location (must be in own territory) |
 | `/f delcore` | Delete faction core |
+| `/f core` | View core status (health, level, skin, effects, cooldowns) |
 
 ## Economy & Progression
 
@@ -100,7 +101,7 @@ Requires permission: `cyberfactions.admin`
 | `/f admin weclaim <faction>` | Claim WorldEdit selection for a faction |
 | `/f admin quests <faction> check` | Force check faction quests |
 | `/f admin taxes <faction> reset` | Reset tax debt for a faction |
-| `/f admin core <faction> skin <name>` | Change a faction's core skin |
+| `/f admin core <faction> refresh` | Force-refresh a faction's core entity (respawn + re-dig sphere) |
 | `/f admin shield give <faction> <hours>` | Give temporary shield to a faction |
 | `/f admin status` | Display full plugin diagnostics |
 | `/f afly <give\|take\|set> <player> <amount>` | Manage a player's fly time balance |

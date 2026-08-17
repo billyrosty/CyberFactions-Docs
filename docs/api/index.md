@@ -11,7 +11,7 @@ New to the API? Jump straight to [Getting Started](/api/getting-started) for a c
 | Package | Contents |
 |---------|----------|
 | `fr.billyrosty.factions.api` | `CyberFactionsAPI`, `CyberFactionsAPIProvider` |
-| `fr.billyrosty.factions.api.service` | `FactionService`, `PlayerService`, `ClaimService`, `EconomyService`, `RelationService`, `TeleportationService` |
+| `fr.billyrosty.factions.api.service` | `FactionService`, `PlayerService`, `ClaimService`, `EconomyService`, `RelationService`, `TeleportationService`, `RoleService` |
 | `fr.billyrosty.factions.api.model` | `FactionSnapshot`, `FPlayerSnapshot`, `ClaimSnapshot`, `CoreSnapshot`, `FLocationSnapshot`, `RelationSnapshot`, `RoleSnapshot` |
 | `fr.billyrosty.factions.api.command` | `CommandRegistry`, `FactionSubCommand`, `TabCompleter` |
 | `fr.billyrosty.factions.api.permission` | `PermissionRegistry`, `CustomPermission`, `PermissionState`, `PermissionType` |
@@ -42,6 +42,8 @@ public interface CyberFactionsAPI {
     RelationService getRelationService();
 
     TeleportationService getTeleportationService();
+
+    RoleService getRoleService();
 
     CommandRegistry getCommandRegistry();
 
@@ -192,6 +194,15 @@ CyberFactionsAPI api = CyberFactionsAPI.getInstance();
 | `hasPendingTeleportation(Player player)` | `boolean` |
 | `cancelPendingTeleportation(Player player)` | `void` |
 | `getWarmupDuration()` | `int` |
+
+### `RoleService`
+
+| Method | Returns |
+|--------|---------|
+| `getRegisteredRoles()` | `Collection<RoleSnapshot>` |
+| `getRole(String id)` | `Optional<RoleSnapshot>` |
+| `getRoleByPlayer(UUID player)` | `Optional<RoleSnapshot>` |
+| `getServerName()` | `String` |
 
 ### `CommandRegistry`
 

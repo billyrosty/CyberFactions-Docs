@@ -35,6 +35,7 @@ upgrades:
       BANK_LIMIT: 100000
       GROWTH_RATE: 1.0
       SPAWNERS_RATE: 1.0
+      QUEST_REWARD_BOOST: 1.0
       RELATIONS_EFFECTS:
         SELF:
           - "REGENERATION:1:true"
@@ -96,6 +97,7 @@ upgrades:
         BANK_LIMIT: 250000
         GROWTH_RATE: 2.0
         SPAWNERS_RATE: 2.0
+        QUEST_REWARD_BOOST: 1.25
         BLOCKS_LIMIT:
           - "SAND:15"
           - "OBSIDIAN:25"
@@ -167,6 +169,7 @@ The `default_settings` section defines what all factions start with at level 1. 
 | `BANK_LIMIT` | integer | `100000` | Maximum money the faction bank can hold. |
 | `GROWTH_RATE` | double | `1.0` | Crop growth speed multiplier in faction territory. |
 | `SPAWNERS_RATE` | double | `1.0` | Spawner speed multiplier in faction territory. |
+| `QUEST_REWARD_BOOST` | double | `1.0` | Multiplier applied to numeric quest rewards (money, faction_bank, power, points). Items and commands are not affected. |
 | `RELATIONS_EFFECTS` | map | (see above) | Potion effects applied to players in territory based on relation. |
 | `BLOCKS_LIMIT` | list | (see above) | Maximum number of specific blocks that can be placed in territory. Format: `"MATERIAL:limit"`. |
 | `BLOCKS_RESISTANCE` | list | (see above) | Number of hits required to break specific blocks (block reinforcement). Format: `"MATERIAL:hits"`. |

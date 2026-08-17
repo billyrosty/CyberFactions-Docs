@@ -58,6 +58,7 @@ permissions:
     CREATE_GARDEN: { ... }
     TELEPORT_GARDEN: { ... }
     SKIP_QUEST: { ... }
+    ATTACK_CORE: { ... }
 ```
 
 ## Permission Status Display
@@ -130,6 +131,7 @@ These permissions control what members of specific roles can do within the facti
 | `CREATE_GARDEN` | Create a faction garden | `GRASS_BLOCK` | 22 |
 | `TELEPORT_GARDEN` | Teleport to the faction garden | `GRASS_BLOCK` | 23 |
 | `SKIP_QUEST` | Skip faction quests (costs money) | `BOOK` | 24 |
+| `ATTACK_CORE` | Participate in raids on enemy cores | `NETHERITE_SWORD` | 29 |
 
 ## Permission Item Structure
 
@@ -164,6 +166,10 @@ PERMISSION_NAME:
 
 ::: tip Permission Inheritance
 If a permission is set to "Undefined" for a role, it inherits the value from the role with the lowest power level. This means you only need to explicitly set permissions for roles that differ from the base.
+:::
+
+::: info ATTACK_CORE Default
+Unlike all other permissions, `ATTACK_CORE` defaults to **ALLOWED** for every role. This means all faction members can participate in raids out of the box. If a faction leader wants to restrict siege participation to officers+, they deny it for lower roles through the permissions GUI. This permission is checked on the **attacker's own faction**, not on the defending faction.
 :::
 
 ::: tip Adding Custom Permissions

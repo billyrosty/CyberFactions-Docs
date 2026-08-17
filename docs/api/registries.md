@@ -97,22 +97,8 @@ api.getPermissionRegistry().registerPermission(new UseBountiesPermission());
 
 Returns `false` when either the faction or the player cannot be resolved.
 
-::: danger Custom permissions cannot be stored per faction
-Step 3 above can never match a custom permission. `setPermission(...)` only writes an entry when `permissionId` names a built-in permission:
-
-```java
-// PermissionRegistryImpl.setPermission
-try {
-    FPermissions builtIn = FPermissions.valueOf(permissionId.toUpperCase());
-    perms.removeIf(fp -> fp.getPermission() == builtIn);
-    perms.add(new FPermission(builtIn, toInternal(state)));
-} catch (IllegalArgumentException ignored) {}   // custom id: silently dropped
-CyberPlugin.getStorageManager().updateFaction(faction, false);
-```
-
-For a custom id the `catch` swallows it, the faction is persisted unchanged, and `getPermissionState(...)` keeps returning `UNDEFINED` forever.
-
-**Net effect:** a registered `CustomPermission` behaves as a single server-wide constant equal to its `getDefaultState()`. Faction leaders cannot grant or revoke it, and it does not appear in the `/f permissions` menu. Treat `registerPermission` as declarative metadata only, and store per-faction toggles in your own addon storage until this is fixed.
+::: tip Custom permissions are stored per faction
+`setPermission(factionId, roleOrRelationId, permissionId, state)` stores custom permission states in the faction's `customPermissions` map (persisted to SQL/Redis). `hasPermission(factionId, player, permissionId)` resolves the stored state for the player's role, falling back to the registered `CustomPermission`'s `getDefaultState()` when nothing is set.
 :::
 
 ::: warning `PermissionType.BOTH` has no counterpart
