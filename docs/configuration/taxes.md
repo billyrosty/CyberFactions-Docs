@@ -1,6 +1,6 @@
 # taxes.yml
 
-Configures the faction upkeep/tax system. Taxes are automatically collected from faction banks on a daily schedule. Factions that cannot pay enter a grace period, after which penalties are applied (territory loss, power reduction, or even disbanding).
+Configures the faction upkeep/tax system. Taxes are automatically collected from faction banks on a daily schedule, with amounts scaling by faction level. Factions that cannot pay enter a grace period, after which penalties are applied (territory loss, power reduction, or even disbanding).
 
 **Location:** `configurations/gameplay/taxes.yml`
 
@@ -26,6 +26,19 @@ taxes:
   unclaim_amount: 1
   power_reduction: 5.0
 
+  max_debt_days: 14
+
+  new_faction_grace_days: 3
+
+  level_multipliers:
+    1: 1.0
+    2: 1.2
+    3: 1.5
+    4: 2.0
+    5: 2.5
+
+  allow_manual_pay: true
+
   min_members_exempt: 1
 
   messages:
@@ -48,6 +61,9 @@ taxes:
 | `taxes.collection_time` | string | `"04:00"` | Time of day (24h format, server timezone) when taxes are collected. Choose a low-activity time to minimize player impact. |
 | `taxes.warning_hours_before` | integer | `1` | Hours before collection to send a warning notification to online faction members. |
 | `taxes.grace_period_days` | integer | `3` | Number of days a faction can be in debt before penalties begin. Gives factions time to raise funds. |
+| `taxes.max_debt_days` | integer | `14` | Maximum days a faction can remain in debt before automatic disband, regardless of configured penalties. `0` = no limit. |
+| `taxes.new_faction_grace_days` | integer | `3` | Days after faction creation during which the faction is exempt from taxes. |
+| `taxes.allow_manual_pay` | boolean | `true` | Allow members to manually pay off tax debt with `/f taxes pay`. |
 | `taxes.min_members_exempt` | integer | `1` | Factions with fewer members than this value are exempt from taxes. Set to `1` to exempt solo factions. |
 
 ### Cost Formula
@@ -55,7 +71,7 @@ taxes:
 The daily tax amount is calculated as:
 
 ```
-total = base_cost + (per_claim * number_of_claims) + (per_member * number_of_members)
+total = (base_cost + (per_claim * claims) + (per_member * members)) * level_multiplier
 ```
 
 | Key | Type | Default | Description |
@@ -65,10 +81,32 @@ total = base_cost + (per_claim * number_of_claims) + (per_member * number_of_mem
 | `taxes.per_member` | double | `5.0` | Additional cost per faction member. |
 
 ::: tip Tax Calculation Example
-A faction with 15 claims and 8 members pays:
+A level 3 faction with 15 claims and 8 members pays:
 ```
-$100 + (15 * $10) + (8 * $5) = $100 + $150 + $40 = $290/day
+($100 + (15 * $10) + (8 * $5)) * 1.5 = ($100 + $150 + $40) * 1.5 = $435/day
 ```
+:::
+
+### Level Multipliers
+
+Higher-level factions pay proportionally more in taxes, creating a natural economic pressure against unchecked progression.
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `taxes.level_multipliers` | map | (see below) | Tax multiplier per faction level. Key = faction level, value = multiplier applied to the total tax. Levels without an entry default to `1.0`. |
+
+Default multipliers:
+
+| Level | Multiplier | Effect |
+|-------|-----------|--------|
+| 1 | 1.0x | Standard tax |
+| 2 | 1.2x | +20% tax |
+| 3 | 1.5x | +50% tax |
+| 4 | 2.0x | Double tax |
+| 5 | 2.5x | +150% tax |
+
+::: tip Progression Balance
+Level multipliers ensure that upgrading your faction increases upkeep. A level 5 faction pays 2.5x what a level 1 faction would for the same territory — they need the economy to match their ambition.
 :::
 
 ### Penalties
@@ -108,18 +146,23 @@ The following factions are always exempt from taxes:
 - Admin factions (Safezone, Warzone, Wilderness -- factions with ID 0, 1, or 2)
 - Factions with fewer members than `min_members_exempt`
 
+### New Faction Grace
+
+Newly created factions are exempt from taxes for `new_faction_grace_days` days (default: 3). This gives new factions time to establish their economy before upkeep kicks in.
+
 ::: warning DISBAND Penalty
-The `DISBAND` penalty is irreversible. If enabled, factions that fail to pay taxes for the grace period duration will be permanently deleted. Consider using gentler penalties (`UNCLAIM_RANDOM` + `REDUCE_POWER`) for most servers.
+The `DISBAND` penalty is irreversible. If enabled, factions that fail to pay taxes for the grace period duration will be permanently deleted. Consider using gentler penalties (`UNCLAIM_RANDOM` + `REDUCE_POWER`) for most servers. Additionally, `max_debt_days` provides a hard limit — after 14 days (default) of unpaid debt, the faction is force-disbanded regardless of configured penalties.
 :::
 
 ::: tip Economy Sink
-Taxes serve as an important economy sink, removing money from circulation daily. This helps combat inflation on servers with generous money sources. Adjust costs relative to your server's economy to ensure taxes are meaningful but not oppressive.
+Taxes serve as an important economy sink, removing money from circulation daily. This helps combat inflation on servers with generous money sources. Adjust costs and level multipliers relative to your server's economy to ensure taxes are meaningful but not oppressive.
 :::
 
 ::: tip Scaling for Server Size
 For larger servers with more mature economies:
 - Increase `base_cost` to $500-1000
 - Increase `per_claim` to $25-50
+- Tune `level_multipliers` to match your upgrade tiers
 - Keep `grace_period_days` at 3-5 for fairness
 - Use `UNCLAIM_RANDOM` + `FREEZE_UPGRADES` as primary penalties
 :::

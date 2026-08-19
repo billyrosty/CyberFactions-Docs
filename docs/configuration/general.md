@@ -54,6 +54,9 @@ general:
     chance: 80
     update_interval: 5
     update_amount: 2000
+    managed_territories:
+      - "faction"
+    max_queue_size: 50000
     ignored_crops:
       - NETHER_WART
     sugar_cane_max_height: 8
@@ -65,7 +68,7 @@ general:
       - "spawn"
       - "pvp"
     blacklisted_factions:
-      - "<#03D024>Wilderness"
+      - 0
 ```
 
 ## Configuration Reference
@@ -136,12 +139,14 @@ CyberFactions includes a custom crop growth system that replaces vanilla random 
 | `growing.chance` | integer | `80` | Percentage chance (0-100) that a plant advances one growth stage per check. |
 | `growing.update_interval` | integer | `5` | Ticks between each batch of crop updates within a single growth cycle. |
 | `growing.update_amount` | integer | `2000` | Number of plants processed per update batch. Higher values may cause lag spikes. |
+| `growing.managed_territories` | list | `["faction"]` | Territories where the custom grow system replaces vanilla. Available: `faction` (player-claimed chunks), `wilderness` (unclaimed), `admin` (safezone/warzone). Vanilla growth is only cancelled inside these territories; everywhere else plants keep growing normally. Warning: only claimed chunks are scanned, so listing `"wilderness"` stops vanilla growth without replacing it. |
+| `growing.max_queue_size` | integer | `50000` | Maximum plants waiting to be updated. Above this limit new plants are dropped instead of being queued, protecting memory on big servers. `-1` = no limit. |
 | `growing.ignored_crops` | list | `["NETHER_WART"]` | Crops excluded from the custom system (use vanilla growth instead). Valid values: `WHEAT`, `CARROTS`, `POTATOES`, `BEETROOTS`, `SWEET_BERRY_BUSH`, `NETHER_WART`, `COCOA`, `PUMPKIN_STEM`, `MELON_STEM`, `SUGAR_CANE`, `CACTUS`. |
 | `growing.sugar_cane_max_height` | integer | `8` | Maximum height sugar cane can grow to. Set to `-1` for no limit. |
 | `growing.cactus_max_height` | integer | `5` | Maximum height cactus can grow to. Set to `-1` for no limit. |
 | `growing.blacklisted_worlds` | list | `["world_nether", "world_the_end"]` | Worlds where the custom growth system is disabled. |
 | `growing.blacklisted_wg_regions` | list | `["spawn", "pvp"]` | WorldGuard regions where crops will not grow. |
-| `growing.blacklisted_factions` | list | `["Wilderness"]` | Faction territories where crops will not grow. Use the faction display name. |
+| `growing.blacklisted_factions` | list | `[0]` | Faction IDs where crops will not grow (`0` = Wilderness, `1` = Safezone, `2` = Warzone). |
 
 ::: warning Performance Considerations
 Setting `update_amount` too high or `update_interval` too low can cause server lag. For servers with many farms, increase `interval` and reduce `update_amount`. A good starting point for large servers is `interval: 1200` and `update_amount: 1000`.

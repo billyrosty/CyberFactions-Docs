@@ -37,13 +37,16 @@ factions:
     max: 10
     per_hour: 100
     per_kill: 0.25
-    per_death: -1
+    per_death: 2.0
     loss_per_day_when_offline: 0.0
     loss_when_offline_limit: 0.0
     worlds_where_power_is_not_lost_when_die:
       - "world"
   bank:
     enabled: true
+    max_transaction_log: 50
+    confirmation_threshold: 50000.0
+    refund_on_disband: true
   upgrade:
     broadcast: true
   warps:
@@ -141,9 +144,9 @@ Power determines how many chunks a faction can claim. Each player contributes th
 | `power.max` | integer | `10` | Maximum power a player can accumulate. |
 | `power.per_hour` | integer | `100` | Power regenerated per hour of online time. |
 | `power.per_kill` | double | `0.25` | Power gained per player kill. |
-| `power.per_death` | double | `-1` | Power lost per death (use negative values). |
+| `power.per_death` | double | `2.0` | Power lost per death (positive value, subtracted from current power). Negative values are read as magnitudes and a warning is printed at startup. |
 | `power.loss_per_day_when_offline` | double | `0.0` | Power lost per day while the player is offline. Set to `0.0` to disable. |
-| `power.loss_when_offline_limit` | double | `0.0` | Maximum total power that can be lost from offline decay. `0.0` means no limit. |
+| `power.loss_when_offline_limit` | double | `0.0` | Maximum total power that can be lost from offline decay. `0.0` means no limit. Counter resets when the player reconnects. |
 | `power.worlds_where_power_is_not_lost_when_die` | list | `["world"]` | Worlds where dying does not cause power loss. |
 
 ::: tip Power Economy
@@ -155,6 +158,13 @@ The power system is the backbone of territory control. If a faction's total powe
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `bank.enabled` | boolean | `true` | Enable the faction bank system. Players can deposit/withdraw money. |
+| `bank.max_transaction_log` | integer | `50` | Maximum number of transactions stored in history, viewable with `/f bank log`. |
+| `bank.confirmation_threshold` | double | `50000.0` | Amount threshold above which a deposit or withdrawal requires confirmation via `/f bank confirm`. Prevents accidental large transactions. |
+| `bank.refund_on_disband` | boolean | `true` | Refund bank balance to members when the faction is disbanded. The total is split evenly among all members. |
+
+::: tip Transaction Safety
+The confirmation threshold acts as a safety net against fat-finger mistakes. A player trying to deposit $100,000 will be prompted to confirm before the transaction goes through. Adjust the threshold based on your server's economy scale.
+:::
 
 ### Upgrades
 

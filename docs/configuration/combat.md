@@ -66,6 +66,12 @@ combat:
   bypass_permission: "cyberfactions.combat.bypass"
   disabled_worlds:
     - "world_lobby"
+  kill_farm_cooldown: 300
+  kill_streak:
+    milestones:
+      5: "eco give %player% 500"
+      10: "eco give %player% 1500;crate give %player% combat 1"
+      20: "eco give %player% 5000;crate give %player% legendary 1"
 ```
 
 ## Configuration Reference
@@ -178,10 +184,41 @@ Creates a visual fake block wall at safezone boundaries to prevent combat-tagged
 | `grace_period.duration` | integer | `5` | Duration of invulnerability in seconds. |
 | `grace_period.only_own_territory` | boolean | `true` | Only grant grace period when the player respawns in their own territory. |
 
+### Kill Farm Protection
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `kill_farm_cooldown` | integer | `300` | Seconds before killing the same player grants power again. Prevents farming kills on the same target. Set to `0` to disable. |
+
+::: tip Anti-Farm
+With a 300-second (5-minute) cooldown, a player who repeatedly kills the same opponent won't gain power after the first kill. This closes the most common power-farming exploit without affecting legitimate PvP.
+:::
+
+### Kill Streak Rewards
+
+Reward players for consecutive kills with configurable commands at milestone thresholds.
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `kill_streak.milestones` | map | (see above) | Commands executed when a player reaches a kill streak milestone. Key = streak count, value = command(s) separated by `;`. Supports `%player%` and `%streak%` placeholders. |
+
+Default milestones:
+
+| Streak | Reward Command |
+|--------|----------------|
+| 5 kills | `eco give %player% 500` |
+| 10 kills | `eco give %player% 1500` + `crate give %player% combat 1` |
+| 20 kills | `eco give %player% 5000` + `crate give %player% legendary 1` |
+
+::: tip Streak Design
+Separate multiple commands with `;`. Milestones do not need to be contiguous — you can define rewards at 5, 10, 25, 50, and 100 kills. Only defined milestones trigger rewards; intermediate kills are ignored.
+:::
+
 ::: tip Balanced Combat Configuration
 For competitive faction servers, consider:
 - `duration: 15` with `enemy_bonus_duration: 10` for longer engagement windows
 - `enderpearl_cooldown: 16` to limit pearl spam
 - `overclaim_protection: true` to prevent "claim rushing" during raids
 - `border.enabled: true` to prevent safezone camping
+- `kill_farm_cooldown: 300` to prevent power exploitation
 :::

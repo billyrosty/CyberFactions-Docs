@@ -41,6 +41,26 @@ $100 + (20 x $10) + (8 x $5) = $100 + $200 + $40 = $340/day
 This formula creates natural pressure against over-expansion. A faction holding 50 chunks needs $600/day just in claim upkeep — they better have the income to match.
 :::
 
+## Level Multipliers
+
+Higher-level factions pay proportionally more in taxes. A multiplier is applied to the base calculation based on faction level:
+
+| Level | Multiplier | Example ($290 base) |
+|-------|-----------|---------------------|
+| 1 | 1.0x | $290 |
+| 2 | 1.2x | $348 |
+| 3 | 1.5x | $435 |
+| 4 | 2.0x | $580 |
+| 5 | 2.5x | $725 |
+
+This creates a meaningful cost of progression — the benefits of higher levels come with higher upkeep.
+
+::: tip Updated Formula
+```
+Daily Tax = (Base Cost + Claims × Per-Claim + Members × Per-Member) × Level Multiplier
+```
+:::
+
 ## Collection Schedule
 
 Taxes are collected once per day at a fixed time:
@@ -72,6 +92,20 @@ During the grace period:
 - The faction has time to raise funds
 
 After the grace period expires, penalties activate every collection cycle until the debt is resolved.
+
+## Manual Payment
+
+Factions in debt can pay off their taxes manually:
+
+```
+/f taxes pay
+```
+
+This deducts the full daily tax amount from the faction bank and clears the debt counter. Only available when `allow_manual_pay: true` in the config.
+
+::: tip Proactive Players
+Manual payment lets active players resolve debt immediately rather than waiting for the next collection cycle. Particularly useful when a faction deposits funds right after failing a collection.
+:::
 
 ## Penalties
 
@@ -142,6 +176,30 @@ Set to 0 to tax everyone. Set higher to protect small groups.
 ### Admin Factions
 
 System factions (Wilderness, Safezone, Warzone — IDs 0, 1, 2) are always exempt from taxation. They cannot accumulate debt.
+
+### New Faction Grace
+
+Newly created factions are exempt from taxes for a configurable number of days:
+
+```yaml
+new_faction_grace_days: 3
+```
+
+This gives new factions time to establish an economy before tax pressure begins.
+
+### Maximum Debt
+
+Factions can only remain in debt for a limited time before being force-disbanded:
+
+```yaml
+max_debt_days: 14
+```
+
+Set to `0` to disable the auto-disband limit. This is independent of the `DISBAND` penalty — it applies regardless of which penalties are configured.
+
+::: warning Hard Limit
+Unlike the `DISBAND` penalty which only fires after the grace period, `max_debt_days` is a hard ceiling on total debt accumulation. Once reached, the faction is disbanded regardless of other settings.
+:::
 
 ## Debt Tracking
 

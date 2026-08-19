@@ -166,6 +166,83 @@ Admins can create protected zones with custom rulesets:
 
 Both lists are fully configurable and checked on every claim attempt.
 
+## Interact Whitelist
+
+By default, a claim protects everything it contains — including all right-click interactions. If you want specific blocks to be publicly usable (buttons, levers, pressure plates), add them to the whitelist:
+
+```yaml
+interact_whitelist:
+  - "STONE_BUTTON"
+  - "LEVER"
+  - "OAK_PRESSURE_PLATE"
+```
+
+This only affects right-click interactions. Breaking and placing are never whitelisted.
+
+## Explosion Protection
+
+Explosions in claimed territory can be controlled per-relation and rate-limited.
+
+### Rate Limiting
+
+Prevent explosion spam with a per-chunk rate limit:
+
+```yaml
+explosions:
+  max_per_chunk_per_minute: 30
+```
+
+When the limit is reached, further explosions in that chunk are cancelled for the remainder of the minute.
+
+### Relation-Based Protection
+
+Block explosions based on who caused them:
+
+```yaml
+protection_per_relation:
+  self: true     # Block own faction's explosions
+  ally: true     # Block ally explosions
+  truce: true    # Block truce explosions
+  default: false # Allow neutral explosions
+  enemy: false   # Allow enemy explosions
+```
+
+Only applies to player-sourced explosions (TNT lit by a player, etc.). Natural explosions (creepers, beds) are not affected by relation-based protection.
+
+::: tip Raid Balance
+By default, self/ally/truce explosions are blocked while enemy and neutral explosions are allowed. This prevents accidental self-destruction while keeping raiding viable.
+:::
+
+## Claim Decay
+
+Automatically unclaim territory from inactive factions where **all** members have been offline:
+
+```yaml
+decay:
+  enabled: false
+  inactivity_days: 14
+  notify_owner: true
+  check_interval_minutes: 60
+```
+
+When a faction's last member has been offline for the configured number of days, their claims are automatically removed. The owner receives a notification if online on another server.
+
+::: warning Data Preservation
+Claim decay only removes territory — it does not disband the faction or delete member data. The faction can reclaim territory when members return.
+:::
+
+## New Faction Grace Period
+
+Give newly created factions a window of overclaim immunity:
+
+```yaml
+grace_period:
+  enabled: false
+  hours: 24
+```
+
+During this window, the faction's territory cannot be overclaimed — giving them time to build up power and establish defenses.
+
 ## Configuration
 
 All claim settings live in `gameplay/claims.yml`. Hot-reload with `/f reload`.

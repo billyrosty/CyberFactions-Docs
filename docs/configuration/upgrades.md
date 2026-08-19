@@ -10,6 +10,9 @@ Configures the faction upgrade/leveling system. Factions start at level 1 and ca
 upgrades:
   upgradable_by_command: true
   scheduler_delay: 2400
+  downgrade:
+    enabled: false
+    grace_checks: 3
   default_settings:
     properties:
       LEVEL_NAME: "1"
@@ -145,6 +148,17 @@ requirements:
 |-----|------|---------|-------------|
 | `upgrades.upgradable_by_command` | boolean | `true` | Allow upgrading via the `/f upgrade` command. If `false`, upgrades can only be triggered by admin commands or API. |
 | `upgrades.scheduler_delay` | integer | `2400` | Ticks between property effect applications (e.g., potion effects refresh). 2400 ticks = 2 minutes. |
+
+### Downgrade Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `upgrades.downgrade.enabled` | boolean | `false` | Enable automatic downgrade when requirements are no longer met. When enabled, the upgrade scheduler periodically checks if factions still meet their current level's requirements. |
+| `upgrades.downgrade.grace_checks` | integer | `3` | Number of consecutive scheduler checks the faction must fail before being downgraded. Prevents flickering when a member briefly logs off or power temporarily dips. |
+
+::: tip Grace Period Design
+With `scheduler_delay: 2400` (2 minutes) and `grace_checks: 3`, a faction has ~6 minutes of failing requirements before being downgraded. Increase `grace_checks` for a more forgiving system.
+:::
 
 ### Default Settings (Level 1)
 

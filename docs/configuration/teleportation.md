@@ -8,6 +8,7 @@ Configures teleportation warmups -- the countdown displayed to players before th
 
 ```yaml
 teleportation:
+  cancel_warmup_on_damage: true
   home:
     delay: 10
   warmup:
@@ -58,6 +59,12 @@ teleportation:
 ```
 
 ## Configuration Reference
+
+### Warmup Cancellation
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `teleportation.cancel_warmup_on_damage` | boolean | `true` | Cancel any active warmup when the player takes damage from any source. |
 
 ### Home Delay
 

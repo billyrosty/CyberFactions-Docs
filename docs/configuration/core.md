@@ -83,7 +83,6 @@ core:
     duration: 1800
     free_overclaim: true
     power_loss_multiplier: 2.0
-    enemy_chest_access: false
     block_regen: false
     bossbar:
       enabled: true
@@ -262,7 +261,6 @@ The raid window that opens when a core is destroyed. Every effect is an independ
 | `vulnerability.duration` | integer | `1800` | Window duration in seconds (1800 = 30 minutes). |
 | `vulnerability.free_overclaim` | boolean | `true` | Enemies can overclaim regardless of the defender's power. |
 | `vulnerability.power_loss_multiplier` | double | `2.0` | Multiplier on power lost per death. `1.0` disables. |
-| `vulnerability.enemy_chest_access` | boolean | `false` | Enemies in faction territory can open `/f chest`. |
 | `vulnerability.block_regen` | boolean | `false` | Core cannot regenerate during the window. |
 
 #### Vulnerability Bossbar
