@@ -77,6 +77,23 @@ warning_hours_before: 1
 
 This gives factions a chance to deposit funds if the bank is running low.
 
+### One collection per day
+
+The scheduler runs a collection at most once per calendar day, and a **failed** collection counts: running out of funds stamps the same "collected today" marker a successful payment does. Consequences worth knowing:
+
+- Changing `collection_time` and reloading does **not** trigger a second collection the same day.
+- If the server is down at `collection_time`, that day is skipped with no automatic catch-up.
+
+### Forcing a collection
+
+```
+/f admin taxes collect
+```
+
+Runs a collection immediately for the whole server, through the same code path as the scheduled one, ignoring the daily lock. It then marks the day as collected so the timer does not fire again later.
+
+Requires `cyberfactions.admin`. Use it to catch up after downtime, or to test a tax configuration without waiting for the next day.
+
 ## Grace Period
 
 When a faction cannot pay, they do not immediately suffer consequences. A grace period gives them time to recover:

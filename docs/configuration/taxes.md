@@ -58,7 +58,7 @@ taxes:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `taxes.enabled` | boolean | `true` | Enable or disable the tax system entirely. |
-| `taxes.collection_time` | string | `"04:00"` | Time of day (24h format, server timezone) when taxes are collected. Choose a low-activity time to minimize player impact. |
+| `taxes.collection_time` | string | `"04:00"` | Time of day (24h format, server timezone) when taxes are collected. Choose a low-activity time to minimize player impact. Collection happens at most once per calendar day — including when it fails for lack of funds — so changing this value and reloading will not trigger a second collection today. Use `/f admin taxes collect` to force one. |
 | `taxes.warning_hours_before` | integer | `1` | Hours before collection to send a warning notification to online faction members. |
 | `taxes.grace_period_days` | integer | `3` | Number of days a faction can be in debt before penalties begin. Gives factions time to raise funds. |
 | `taxes.max_debt_days` | integer | `14` | Maximum days a faction can remain in debt before automatic disband, regardless of configured penalties. `0` = no limit. |

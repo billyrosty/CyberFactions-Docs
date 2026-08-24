@@ -61,11 +61,22 @@ The pattern is: `<prefix><command_name>` — e.g. `cyberfactions.claim`, `cyberf
 | `cyberfactions.admin.stress` | `/f stress` | Stress testing commands |
 | `cyberfactions.reload` | `/f reload` | Reload all configurations |
 
-## Special Permissions
+`/f admin taxes collect` forces an immediate tax collection for the whole server, bypassing the once-a-day lock. See [taxes.yml](/configuration/taxes).
+
+## Bypass Permissions
+
+These four nodes each disable a game rule for whoever holds them. They are registered as `default: false`, which means **operators do not inherit them** and they are not part of the `cyberfactions.*` bundle. A bypass has to be granted on purpose.
 
 | Permission | Description |
 |------------|-------------|
-| `cyberfactions.bypass.warmup` | Skip teleportation warmup (home, warp) |
+| `cyberfactions.bypass.warmup` | Skip teleportation warmup (`/f home`, `/f warp`, warp menu) |
+| `cyberfactions.bypass.cooldown` | Ignore the per-command cooldowns from `general.yml` |
+| `cyberfactions.combat.bypass` | Never be combat tagged. Node name configurable in `combat.yml` (`bypass_permission`) |
+| `cyberfactions.shield.bypass` | Overclaim a shielded faction. Node name configurable in `shield.yml` (`bypass_permission`) |
+
+::: warning Do not grant these through a wildcard
+`cyberfactions.*` deliberately excludes them. Granting the wildcard to your staff group will not hand out the bypasses; granting `cyberfactions.bypass.*` or setting a node explicitly will. If you are testing combat, warmups or cooldowns as an operator and nothing seems to apply to you, check whether one of these is set explicitly somewhere.
+:::
 
 ## Commands Without Permission Check
 
@@ -102,8 +113,12 @@ lp group default permission set cyberfactions.fly true
 # Admin access
 lp group admin permission set cyberfactions.admin true
 
-# Wildcard (all permissions)
+# Wildcard (all commands — does NOT include the bypass nodes)
 lp group admin permission set cyberfactions.* true
+
+# Bypasses, if you actually want them
+lp group admin permission set cyberfactions.bypass.warmup true
+lp group admin permission set cyberfactions.bypass.cooldown true
 ```
 
 ::: warning
@@ -111,5 +126,7 @@ The permission prefix is configurable in `general.yml` under `command.permission
 :::
 
 ::: tip
-By default, OPs have all permissions. For production servers, use a permission plugin and assign permissions explicitly.
+By default, OPs have all command permissions. The four bypass nodes above are the exception: they are explicitly declared `default: false`, so an operator is subject to combat tagging, warmups, cooldowns and shields like everyone else.
+
+For production servers, use a permission plugin and assign permissions explicitly.
 :::

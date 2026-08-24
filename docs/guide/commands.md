@@ -101,6 +101,7 @@ Requires permission: `cyberfactions.admin`
 | `/f admin weclaim <faction>` | Claim WorldEdit selection for a faction |
 | `/f admin quests <faction> check` | Force check faction quests |
 | `/f admin taxes <faction> reset` | Reset tax debt for a faction |
+| `/f admin taxes collect` | Force an immediate tax collection server-wide, ignoring the once-a-day lock |
 | `/f admin core <faction> refresh` | Force-refresh a faction's core entity (respawn + re-dig sphere) |
 | `/f admin shield give <faction> <hours>` | Give temporary shield to a faction |
 | `/f admin status` | Display full plugin diagnostics |

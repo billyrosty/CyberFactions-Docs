@@ -78,7 +78,7 @@ upgrades:
     2:
       requirements:
         first_requirement:
-          type: "PLACEHOLDER"
+          type: "FACTION_MONEY"
           value: 100000
         second_requirement:
           type: "MEMBER_COUNT"
@@ -244,6 +244,17 @@ levels:
 | `POWER` | Faction needs this much total power | Power amount |
 | `QUEST` | Specific quest must be completed | Quest ID |
 | `PLACEHOLDER` | PlaceholderAPI placeholder must return this value | Numeric value |
+
+::: warning PLACEHOLDER needs a `placeholder` key
+Unlike every other type, `PLACEHOLDER` takes two keys: the placeholder to read and the value to compare against. A requirement declaring `type: "PLACEHOLDER"` without `placeholder` is skipped with a warning in the console, and the level ends up easier than intended.
+
+```yaml
+first_requirement:
+  type: "PLACEHOLDER"
+  placeholder: "%vault_eco_balance%"
+  value: 100000
+```
+:::
 
 ::: tip Upgrade Progression Design
 Design levels with increasing difficulty that unlocks meaningful benefits:

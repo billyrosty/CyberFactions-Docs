@@ -18,6 +18,14 @@ general:
       - "cyberfaction"
       - "cyberfac"
     permissions_prefix: "cyberfactions."
+  territory_detection:
+    mode: EVENTS
+    scheduler_interval: 10
+  command_cooldowns:
+    list: 3000
+    map: 5000
+    show: 2000
+    top: 5000
   save:
     interval: 5
   help:
@@ -88,6 +96,35 @@ general:
 | `command.name` | string | `"f"` | The base command name (e.g., `/f create`). |
 | `command.aliases` | list | `["cf", "cyberfaction", "cyberfac"]` | Alternative command names that players can use. |
 | `command.permissions_prefix` | string | `"cyberfactions."` | Prefix for all permission nodes. For example, the `create` subcommand requires `cyberfactions.create`. |
+
+### Territory Detection
+
+How the plugin notices a player entering or leaving a territory. This drives the territory notification (chat, actionbar, title, sound) and the relation potion effects from `RELATIONS_EFFECTS`.
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `territory_detection.mode` | string | `EVENTS` | `EVENTS` or `SCHEDULER`. See below. |
+| `territory_detection.scheduler_interval` | integer | `10` | `SCHEDULER` mode only. Ticks between position samples. Lower is more accurate and more costly. |
+
+**`EVENTS` (recommended)** reacts to `PlayerMoveEvent`, `VehicleMoveEvent` (a mounted player generates no move event of their own), `PlayerTeleportEvent` and `PlayerRespawnEvent`. Nothing runs for players standing still, and no territory change can be missed. The listeners exit on three integer comparisons when the player has not changed chunk, so look-only movement costs nothing measurable.
+
+**`SCHEDULER`** samples every online player's position on a timer instead. It is simpler to reason about, but it cannot see a chunk that was crossed between two samples: at the default 10 ticks, a player on an elytra covers almost two chunks per sample and can pass straight through a claim without triggering its notification or its relation effects. It also does constant work for idle players.
+
+::: warning Only switch to SCHEDULER if EVENTS is measurably costing you
+`SCHEDULER` trades correctness for a fixed, predictable cost. It is kept as an escape hatch, not as an equivalent alternative.
+:::
+
+::: tip Claims that change under a standing player
+Neither mode is involved when the ground changes owner beneath a player who has not moved — a claim, an unclaim or an overclaim. That case is handled separately and always applies, in both modes.
+:::
+
+### Command Cooldowns
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `command_cooldowns.<subcommand>` | integer | (see above) | Milliseconds a player must wait between two uses of that subcommand. `0` or absent means no cooldown. The key is the subcommand name in lowercase. |
+
+Holders of `cyberfactions.bypass.cooldown` are exempt. That node is **not** granted to operators — see [Permissions](/guide/permissions).
 
 ### Save Settings
 

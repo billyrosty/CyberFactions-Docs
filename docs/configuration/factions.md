@@ -40,8 +40,7 @@ factions:
     per_death: 2.0
     loss_per_day_when_offline: 0.0
     loss_when_offline_limit: 0.0
-    worlds_where_power_is_not_lost_when_die:
-      - "world"
+    worlds_where_power_is_not_lost_when_die: []
   bank:
     enabled: true
     max_transaction_log: 50
@@ -147,7 +146,7 @@ Power determines how many chunks a faction can claim. Each player contributes th
 | `power.per_death` | double | `2.0` | Power lost per death (positive value, subtracted from current power). Negative values are read as magnitudes and a warning is printed at startup. |
 | `power.loss_per_day_when_offline` | double | `0.0` | Power lost per day while the player is offline. Set to `0.0` to disable. |
 | `power.loss_when_offline_limit` | double | `0.0` | Maximum total power that can be lost from offline decay. `0.0` means no limit. Counter resets when the player reconnects. |
-| `power.worlds_where_power_is_not_lost_when_die` | list | `["world"]` | Worlds where dying does not cause power loss. |
+| `power.worlds_where_power_is_not_lost_when_die` | list | `[]` | Worlds where dying does not cause power loss. Empty means power is lost everywhere. Listing a world here silently disables the whole death-penalty half of the power system in it, so do not add your main world unless that is what you want. |
 
 ::: tip Power Economy
 The power system is the backbone of territory control. If a faction's total power drops below its number of claimed chunks, enemies can overclaim their territory. Tune `per_kill`, `per_death`, and `per_hour` to match your server's playstyle.

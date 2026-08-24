@@ -44,6 +44,12 @@ core:
     end_crystal: "END_CRYSTAL"
 ```
 
+The core entity is immune to everything the world can throw at it — fire, sunlight, drowning, suffocation, fall damage. It only ever loses health through the plugin's own damage system, so a hostile skin will not quietly burn away in daylight.
+
+::: warning Hostile skins need a difficulty above Peaceful
+On `difficulty=peaceful` the server deletes every hostile mob each tick, so a core using the default `ZOMBIE` skin is removed the instant it is placed and the respawn task loops forever. The console says so explicitly when it happens. Either raise the difficulty, or point `values.default` at a passive entity such as `SHEEP` or `PIG`.
+:::
+
 ### ModelEngine Mode
 
 For servers using ModelEngine, cores can be custom 3D models — giving you complete visual control over the core's appearance:

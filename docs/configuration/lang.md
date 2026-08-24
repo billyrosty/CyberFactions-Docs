@@ -102,6 +102,23 @@ commands:
   reload: { ... }
 ```
 
+## The plugin prefix
+
+`plugin_prefix` sits at the top of the file and defines the plugin's chat prefix:
+
+```yaml
+plugin_prefix: "<gradient:#89E0FB:#B41AFD><bold>CyberFactions</bold></gradient> <gray>▪</gray> <#89E0FB>"
+```
+
+**No message carries the prefix implicitly.** Every message in this file supports `%prefix%`, which resolves to the value above — add it only where you want it:
+
+```yaml
+faction_created: "%prefix%<#00D93A>✔ Your faction has been created!"
+no_permission: "<#F7483B>⚠ You do not have permission!"
+```
+
+`%prefix%` is resolved for chat messages, action bars, titles, broadcasts and console output alike, because every rendering path goes through the same parser. Console logs emitted by the plugin itself (startup, storage, schedulers) keep their prefix unconditionally — it is not driven by this placeholder.
+
 ## Available Placeholders
 
 Each message section supports context-specific placeholders. Common placeholders include:
@@ -122,6 +139,7 @@ Each message section supports context-specific placeholders. Common placeholders
 | `%member_name%` | Claim notifications | Acting member's name |
 | `%faction_desc%` | Show/desc commands | Faction description |
 | `%amount%` | Core bank messages | Money amount lost/gained |
+| `%prefix%` | **Every message** | The `plugin_prefix` value defined at the top of the file |
 
 ## Command Message Structure
 
