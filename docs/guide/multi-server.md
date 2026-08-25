@@ -2,6 +2,42 @@
 
 CyberFactions supports full cross-server synchronization via Redis. All faction data, claims, and player states are synced in real-time.
 
+## Diagnosing a desync
+
+Three layers hold faction and player state, and they can drift apart — a notification lost while
+Redis was down, a cache entry evicted, a server that missed an event.
+
+| Layer | Role |
+|---|---|
+| MySQL | The source of truth. Every mutation is written here. |
+| Redis | A fast copy. Receivers read it when a notification arrives. |
+| Server memory | Each server's own copy, fed by those notifications. |
+
+```
+/f admin inspect faction <name>
+/f admin inspect player <name>
+```
+
+Reports presence and `lastUpdate` per layer, and says whether they agree. This turns "something
+desynced" into a specific layer before you touch anything.
+
+```
+/f admin sync faction <name>
+/f admin sync player <name>
+/f admin sync all
+```
+
+Re-reads the authoritative row from MySQL, replaces the local copy, rewrites the Redis cache and
+notifies the other servers — the same three steps the reconnect resync performs, aimed at one
+entity. `all` is the blunt instrument for after an incident.
+
+If `inspect` reports the entity absent from MySQL, `sync` will refuse: there is nothing
+authoritative to restore, and the entity should be removed rather than resurrected.
+
+::: tip Both commands run off the main thread
+They read through JDBC and block on Redis. Results arrive in chat a moment later.
+:::
+
 ## Requirements
 
 - **MySQL** database (shared between all servers)

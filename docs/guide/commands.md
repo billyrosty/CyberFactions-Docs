@@ -105,6 +105,9 @@ Requires permission: `cyberfactions.admin`
 | `/f admin core <faction> refresh` | Force-refresh a faction's core entity (respawn + re-dig sphere) |
 | `/f admin shield give <faction> <hours>` | Give temporary shield to a faction |
 | `/f admin status` | Display full plugin diagnostics |
+| `/f admin inspect <faction/player> <name>` | Show what memory, the Redis cache and MySQL each hold |
+| `/f admin sync <faction/player> <name>` | Push MySQL back over the cache and the other servers |
+| `/f admin sync all` | Same, for every faction and player |
 | `/f afly <give\|take\|set> <player> <amount>` | Manage a player's fly time balance |
 | `/f points <give\|take\|set> <faction> <amount>` | Manage manual ranking points for a faction |
 | `/f reload` | Reload all configuration files |
