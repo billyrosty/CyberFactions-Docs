@@ -70,21 +70,42 @@ power and overclaim rules.
 
 ## Economy server
 
-Everything the defaults left switched off because it needs money. **Requires
-Vault and an economy provider** such as EssentialsX.
+The shipped defaults already assume Vault, since nearly every server runs it:
+quests pay into player wallets, kill streaks pay a Vault deposit, and upgrade
+levels charge the faction bank. This preset pushes that further.
 
 | File | Key | Value | Why |
 |---|---|---|---|
 | `gameplay/claims.yml` | `cost.enabled` | `true` | Land has a purchase price, not only upkeep |
 | `gameplay/claims.yml` | `cost.from_bank` | `true` | Charged to the faction, not the individual |
-| `gameplay/quests.yml` | `money` per quest | restore values | Quests pay players again |
 | `gameplay/taxes.yml` | `base_cost` | `250.0` | Upkeep sized for a real economy |
-| `gameplay/combat.yml` | `kill_streak.milestones` | the `eco give` lines | Commented in the file, ready to swap in |
-| `social/top.yml` | `seasons.rewards` | `eco give` commands | Reward the podium in currency |
-| `gameplay/upgrades.yml` | level requirements | `FACTION_MONEY` | Levelling becomes an economic goal |
+| `gameplay/upgrades.yml` | `FACTION_MONEY` values | raise them | Levelling becomes the main money sink |
+| `social/top.yml` | `seasons.rewards` | your economy's give command | Reward the podium in currency |
 
-Once Vault is installed, `/f bank deposit` and `/f bank withdraw` start working
-with no configuration at all — that part only ever needed the provider.
+::: warning Claim costs and new factions
+`cost.enabled` ships off for a reason. With `from_bank: true` a faction that has
+just been created has an empty bank and therefore cannot claim anything at all.
+Either give new factions a starting balance, or set `from_bank: false` so the
+founder pays from their own wallet.
+:::
+
+### Running without Vault
+
+Nothing breaks. The plugin lists the disabled features at startup rather than
+failing quietly, and the internal half of the economy carries the progression on
+its own:
+
+| Needs Vault | Works without it |
+|---|---|
+| `/f bank deposit` and `/f bank withdraw` | The faction bank itself |
+| Quest `money` rewards | Quest `faction_bank` and `points` rewards |
+| `kill_streak.money` | `kill_streak.milestones` commands |
+| Quest `skip_price` | `FACTION_MONEY` upgrade requirements |
+| `PLAYER_MONEY` requirements | Taxes, disband refunds to the bank |
+
+To make a Vault-free server explicit, set every quest `money` to `0` and delete
+the `kill_streak.money` block. Avoid `PLAYER_MONEY` in `upgrades.yml`: it fails
+closed without Vault, which makes the level unreachable rather than free.
 
 ## Multi-server network
 
