@@ -47,7 +47,8 @@ export default defineConfig({
           items: [
             { text: 'Getting Started', link: '/guide/getting-started' },
             { text: 'Installation', link: '/guide/installation' },
-            { text: 'Multi-Server Setup', link: '/guide/multi-server' }
+            { text: 'Multi-Server Setup', link: '/guide/multi-server' },
+            { text: 'Configuration Presets', link: '/guide/presets' }
           ]
         },
         {
