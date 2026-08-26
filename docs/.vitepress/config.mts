@@ -21,8 +21,10 @@ const missingImagePlugin = {
   }
 }
 
+const base = '/CyberFactions-Docs/'
+
 export default defineConfig({
-  base: '/CyberFactions-Docs/',
+  base,
   ignoreDeadLinks: true,
   vite: {
     plugins: [missingImagePlugin]
@@ -30,7 +32,7 @@ export default defineConfig({
   title: 'CyberFactions',
   description: 'Documentation for CyberFactions - The ultimate Minecraft Factions plugin',
   head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }]
+    ['link', { rel: 'icon', href: `${base}favicon.ico` }]
   ],
   themeConfig: {
     logo: '/logo.png',
