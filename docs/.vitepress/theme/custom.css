@@ -200,8 +200,25 @@
   background: url('../../public/logo.png') center / contain no-repeat;
 }
 
-/* The hero is centred only when it carries no side image; with one, the text
-   column is left-aligned and the wordmark has to follow it. */
+/* Every centring rule VitePress ships is scoped to `.VPHero.has-image`, so a
+   hero without a side image gets none of them and falls back to the document's
+   left alignment. This hero has no image, so the centring has to be stated. */
+.VPHero:not(.has-image) .container {
+  text-align: center;
+}
+
+.VPHero:not(.has-image) .text,
+.VPHero:not(.has-image) .tagline {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.VPHero:not(.has-image) .actions {
+  justify-content: center;
+}
+
+/* With a side image the text column is left-aligned, and the wordmark follows
+   it rather than floating in the middle of its own column. */
 .VPHero.has-image .heading::before {
   margin-left: 0;
   margin-right: 0;

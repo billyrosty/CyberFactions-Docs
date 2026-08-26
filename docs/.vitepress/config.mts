@@ -41,6 +41,7 @@ export default defineConfig({
     // The wordmark already spells the name; the text beside it would say it twice.
     siteTitle: false,
     nav: [
+      { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Configuration', link: '/configuration/' },
       { text: 'Addons', link: '/addons/' },
