@@ -141,11 +141,11 @@
  *  Navbar — the wordmark replaces the site title
  * ------------------------------------------------------------------ */
 
-/* `siteTitle: false` in config.mts removes the text, leaving the image alone
-   in the slot. VitePress sizes logos for a square mark at 24px; the wordmark
-   is a two-line lockup and needs the height to stay legible. */
+/* `siteTitle: false` in config.mts removes the text, leaving the CF mark alone
+   in the slot. VitePress sizes logos at 24px, which is right for a mark that
+   sits beside a title and too small for one carrying the slot on its own. */
 .VPNavBarTitle .logo {
-  height: 36px;
+  height: 32px;
   width: auto;
   max-width: none;
   margin-right: 0;

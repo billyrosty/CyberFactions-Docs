@@ -37,7 +37,7 @@ export default defineConfig({
   themeConfig: {
     // With siteTitle off the image is the only thing in the home link, so it
     // has to carry the accessible name itself.
-    logo: { src: '/logo.png', alt: 'CyberFactions' },
+    logo: { src: '/icon.png', alt: 'CyberFactions' },
     // The wordmark already spells the name; the text beside it would say it twice.
     siteTitle: false,
     nav: [
