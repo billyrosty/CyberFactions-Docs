@@ -1,0 +1,265 @@
+/*
+ * CyberFactions documentation theme.
+ *
+ * Every colour below is sampled from the logo rather than invented: the deep
+ * violet ground (#240234), the magenta run across CYBER (#842484 -> #E484B4)
+ * and the cyan run across FACTIONS (#29B0E5 -> #6CC0D8). Magenta carries the
+ * brand — links, buttons, active states — and cyan carries the second voice:
+ * tips, gradients, the rule under the navbar. Two hues, each with one job.
+ */
+
+/* ------------------------------------------------------------------ *
+ *  Palette
+ * ------------------------------------------------------------------ */
+
+:root {
+  /* Brand — magenta. brand-1 is text on a light ground, so it is the darkest
+     of the three: the lighter logo pinks do not clear 4.5:1 on white. */
+  --cf-magenta-1: #A62C86;
+  --cf-magenta-2: #C0388F;
+  --cf-magenta-3: #D6459B;
+  --cf-pink: #E484B4;
+
+  /* Second voice — cyan. */
+  --cf-cyan-1: #1B8FC4;
+  --cf-cyan-2: #29B0E5;
+  --cf-cyan-3: #6CC0D8;
+
+  /* The logo's own ground. */
+  --cf-violet-ink: #240234;
+
+  --vp-c-brand-1: var(--cf-magenta-1);
+  --vp-c-brand-2: var(--cf-magenta-2);
+  --vp-c-brand-3: var(--cf-magenta-3);
+  --vp-c-brand-soft: rgba(214, 69, 155, 0.14);
+
+  /* VitePress aliases tips onto the brand by default, which would make every
+     callout magenta too. Cyan keeps them distinct. */
+  --vp-c-tip-1: var(--cf-cyan-1);
+  --vp-c-tip-2: var(--cf-cyan-2);
+  --vp-c-tip-3: var(--cf-cyan-3);
+  --vp-c-tip-soft: rgba(41, 176, 229, 0.14);
+
+  --vp-c-warning-1: #9A6207;
+  --vp-c-warning-2: #B87A12;
+  --vp-c-warning-3: #D9A03C;
+  --vp-c-warning-soft: rgba(217, 160, 60, 0.16);
+
+  --vp-c-danger-1: #B32449;
+  --vp-c-danger-2: #CC3059;
+  --vp-c-danger-3: #E24970;
+  --vp-c-danger-soft: rgba(226, 73, 112, 0.15);
+
+  /* Neutrals biased toward the logo's violet rather than a flat grey. */
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #faf4fb;
+  --vp-c-bg-soft: #f7eef9;
+  --vp-c-bg-elv: #ffffff;
+
+  --vp-c-text-1: #2a0b36;
+  --vp-c-text-2: #5c4166;
+  /* 5.2:1 on white — a lighter violet grey looked better and failed AA. */
+  --vp-c-text-3: #7d6486;
+
+  --vp-c-divider: #f0dff2;
+  --vp-c-border: #e6d0ea;
+  --vp-c-gutter: #ebd4ee;
+}
+
+.dark {
+  --vp-c-brand-1: #f2a3d3;
+  --vp-c-brand-2: #e070b8;
+  --vp-c-brand-3: #c0388f;
+  --vp-c-brand-soft: rgba(226, 112, 184, 0.16);
+
+  --vp-c-tip-1: #8fd6f2;
+  --vp-c-tip-2: #4dbde8;
+  --vp-c-tip-3: #1b8fc4;
+  --vp-c-tip-soft: rgba(77, 189, 232, 0.16);
+
+  --vp-c-warning-1: #f0c479;
+  --vp-c-warning-2: #d9a03c;
+  --vp-c-warning-3: #9a6207;
+  --vp-c-warning-soft: rgba(217, 160, 60, 0.16);
+
+  --vp-c-danger-1: #f79bb4;
+  --vp-c-danger-2: #e24970;
+  --vp-c-danger-3: #b32449;
+  --vp-c-danger-soft: rgba(226, 73, 112, 0.16);
+
+  /* Deep violet rather than the default near-black, so the page reads as part
+     of the same world as the logo. */
+  --vp-c-bg: #170624;
+  --vp-c-bg-alt: #100418;
+  --vp-c-bg-soft: #210931;
+  --vp-c-bg-elv: #240a36;
+
+  --vp-c-text-1: #f6edfa;
+  --vp-c-text-2: #c7b0d4;
+  --vp-c-text-3: #94789f;
+
+  --vp-c-divider: #35124a;
+  --vp-c-border: #3f1758;
+  --vp-c-gutter: #0b0212;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Buttons and hero
+ * ------------------------------------------------------------------ */
+
+:root {
+  --vp-button-brand-bg: var(--cf-magenta-2);
+  --vp-button-brand-hover-bg: var(--cf-magenta-3);
+  --vp-button-brand-active-bg: var(--cf-magenta-1);
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-hover-text: #ffffff;
+  --vp-button-brand-active-text: #ffffff;
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-active-border: transparent;
+
+  /* Kept in step with the hidden hero name, and used by any other page that
+     opts into the home layout. */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(100deg, var(--cf-cyan-2), var(--cf-magenta-3));
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, var(--cf-cyan-2) 40%, var(--cf-magenta-3) 60%);
+  --vp-home-hero-image-filter: blur(60px);
+}
+
+/* The primary call to action carries the full logo sweep, cyan into magenta.
+   Everything else stays flat so this is the one thing that moves. */
+.VPButton.brand {
+  background-image: linear-gradient(100deg, var(--cf-cyan-1), var(--cf-magenta-2) 65%);
+  border: 0;
+}
+
+.VPButton.brand:hover {
+  background-image: linear-gradient(100deg, var(--cf-cyan-2), var(--cf-magenta-3) 65%);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Navbar — the wordmark replaces the site title
+ * ------------------------------------------------------------------ */
+
+/* `siteTitle: false` in config.mts removes the text, leaving the image alone
+   in the slot. VitePress sizes logos for a square mark at 24px; the wordmark
+   is a two-line lockup and needs the height to stay legible. */
+.VPNavBarTitle .logo {
+  height: 36px;
+  width: auto;
+  max-width: none;
+  margin-right: 0;
+}
+
+@media (max-width: 767px) {
+  .VPNavBarTitle .logo {
+    height: 28px;
+  }
+}
+
+/* A thin cyan-to-magenta rule under the navbar, in place of the default
+   hairline divider. */
+.VPNavBar {
+  position: relative;
+}
+
+.VPNavBar::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cf-cyan-2), var(--cf-magenta-3) 55%, var(--cf-cyan-2));
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Home hero — the wordmark as the heading
+ * ------------------------------------------------------------------ */
+
+/* The `name` stays in the DOM for screen readers and for the document
+   outline; only its pixels are replaced by the wordmark. */
+.VPHero .name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.VPHero .heading::before {
+  content: '';
+  display: block;
+  width: min(100%, 560px);
+  aspect-ratio: 2000 / 980;
+  margin: 0 auto 24px;
+  background: url('../../public/logo.png') center / contain no-repeat;
+}
+
+/* The hero is centred only when it carries no side image; with one, the text
+   column is left-aligned and the wordmark has to follow it. */
+.VPHero.has-image .heading::before {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+@media (max-width: 639px) {
+  .VPHero .heading::before {
+    width: min(100%, 340px);
+    margin-bottom: 16px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Feature cards
+ * ------------------------------------------------------------------ */
+
+.VPFeature {
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.VPFeature:hover {
+  transform: translateY(-2px);
+  border-color: var(--vp-c-brand-2);
+  box-shadow: 0 10px 28px -14px rgba(192, 56, 143, 0.55);
+}
+
+.dark .VPFeature:hover {
+  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Reading surfaces
+ * ------------------------------------------------------------------ */
+
+/* Inline code sits on the brand tint rather than a neutral grey, which is
+   what carries the colour into the body of a long config page. */
+.vp-doc :not(pre) > code {
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc h2 {
+  border-top-color: var(--vp-c-divider);
+}
+
+/* Table headers pick up the alternate ground so the many config tables in
+   these docs read as blocks instead of loose rows. */
+.vp-doc th {
+  background-color: var(--vp-c-bg-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .VPFeature,
+  .VPButton.brand {
+    transition: none;
+  }
+
+  .VPFeature:hover {
+    transform: none;
+  }
+}

@@ -35,7 +35,11 @@ export default defineConfig({
     ['link', { rel: 'icon', href: `${base}favicon.ico` }]
   ],
   themeConfig: {
-    logo: '/logo.png',
+    // With siteTitle off the image is the only thing in the home link, so it
+    // has to carry the accessible name itself.
+    logo: { src: '/logo.png', alt: 'CyberFactions' },
+    // The wordmark already spells the name; the text beside it would say it twice.
+    siteTitle: false,
     nav: [
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Configuration', link: '/configuration/' },
