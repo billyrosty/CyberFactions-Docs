@@ -12,8 +12,8 @@ hero:
       text: Configuration
       link: /configuration/
     - theme: alt
-      text: View on SpigotMC
-      link: https://spigotmc.org
+      text: API
+      link: /api/
 
 features:
   - icon: ⚔️
