@@ -37,7 +37,7 @@ After installation:
 2. **Configure storage** in `databases.yml` (SQLite by default, MySQL for production)
 3. **Set up the economy** — ensure Vault and an economy plugin are installed
 4. **Review faction settings** in `factions.yml` (creation cost, max members, etc.)
-5. **Customize messages** in `lang.yml`
+5. **Customize messages** in `lang.yml` — or copy a ready-made translation from `translations/` (French, German, Spanish, Brazilian Portuguese)
 
 ## Multi-Server Setup
 

@@ -33,6 +33,11 @@ plugins/CyberFactions/configurations/
 ├── databases.yml
 ├── factions.yml
 ├── lang.yml
+├── translations/
+│   ├── lang_fr.yml      # French
+│   ├── lang_de.yml      # German
+│   ├── lang_es.yml      # Spanish
+│   └── lang_pt.yml      # Brazilian Portuguese
 ├── gameplay/
 │   ├── claims.yml
 │   ├── combat.yml

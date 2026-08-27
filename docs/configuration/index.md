@@ -10,6 +10,7 @@ plugins/CyberFactions/configurations/
 ├── databases.yml        # Storage backends (SQLite, MySQL, Redis)
 ├── factions.yml         # Faction features (create, invite, fly, power, etc.)
 ├── lang.yml             # All player-facing messages
+├── translations/        # Ready-made translations (FR, DE, ES, PT-BR)
 ├── gameplay/
 │   ├── claims.yml       # Claim costs, radius, borders
 │   ├── combat.yml       # Combat tagging, borders

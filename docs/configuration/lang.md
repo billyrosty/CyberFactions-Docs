@@ -187,6 +187,42 @@ You can fully customize every message in this file. The MiniMessage format suppo
 Keep messages concise. Very long messages with complex formatting (many hover/click events) can cause performance issues when sent to many players simultaneously (e.g., broadcasts).
 :::
 
-::: tip Translations
-To translate the plugin to another language, simply edit all message values in this file. The structure and placeholders must remain unchanged -- only modify the displayed text.
+## Translations
+
+CyberFactions ships with ready-made translations in the `configurations/translations/` folder:
+
+| File | Language |
+|------|----------|
+| `lang_fr.yml` | French |
+| `lang_de.yml` | German |
+| `lang_es.yml` | Spanish |
+| `lang_pt.yml` | Brazilian Portuguese |
+
+### Switching language
+
+1. Open the translation file you want (e.g. `translations/lang_fr.yml`)
+2. Copy its entire content
+3. Paste it into `configurations/lang.yml`, replacing the existing content
+4. Run `/f reload`
+
+That's it — every message in the plugin is now in the new language.
+
+### Translating to another language
+
+To translate CyberFactions into a language that is not included:
+
+1. Make a copy of `lang.yml`
+2. Translate every message value. Change only the displayed text — **keep all of the following intact:**
+   - `%placeholder%` tokens (e.g. `%faction_name%`, `%player%`, `%power%`)
+   - MiniMessage tags (e.g. `<#F7483B>`, `<gradient:...>`, `<hover:...>`, `<click:...>`)
+   - YAML key names and indentation
+   - Command argument placeholders like `<player>` inside usage strings
+3. Replace the content of `lang.yml` with your translation
+4. Run `/f reload`
+
+::: warning Placeholders and tags
+Removing or misspelling a `%placeholder%` will show the raw token to players. Removing a MiniMessage tag will break formatting or cause parse errors. Always test your changes in-game after editing.
 :::
+
+::: tip Contributing a translation
+If you translate the plugin to a new language and want it included in future releases, share it on the Discord — community translations are welcome.
