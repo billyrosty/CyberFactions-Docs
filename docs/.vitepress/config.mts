@@ -145,7 +145,7 @@ export default defineConfig({
       ]
     },
     socialLinks: [
-      { icon: 'discord', link: 'https://discord.gg/cyberfactions' }
+      { icon: 'discord', link: 'https://discord.gg/Ay2FcNjT8a' }
     ],
     search: {
       provider: 'local'
